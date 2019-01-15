@@ -6,7 +6,7 @@
 //修改原因：
 //
 //
-//作者：***
+//作者：CenJieTeng
 //QQ: 2271369683
 #pragma once
 #ifndef SPARSEMATRIX_H
