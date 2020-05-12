@@ -265,28 +265,28 @@ namespace cjt
 
 	//返回首迭代器
 	template <typename T>
-	typename const SeqList<T>::DataType* SeqList<T>::begin() const
+	const typename SeqList<T>::DataType* SeqList<T>::begin() const
 	{
 		return data + 1;
 	}
 
 	//返回尾后迭代器
 	template <typename T>
-	typename const SeqList<T>::DataType* SeqList<T>::end() const
+	const typename SeqList<T>::DataType* SeqList<T>::end() const
 	{
 		return begin() + length;
 	}
 
 	//返回const首迭代器
 	template <typename T>
-	typename const SeqList<T>::DataType* SeqList<T>::cbegin() const
+	const typename SeqList<T>::DataType* SeqList<T>::cbegin() const
 	{
 		return data + 1;
 	}
 
 	//返回const尾后迭代器
 	template <typename T>
-	typename const SeqList<T>::DataType* SeqList<T>::cend() const
+	const typename SeqList<T>::DataType* SeqList<T>::cend() const
 	{
 		return cbegin() + length;
 	}
