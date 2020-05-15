@@ -40,10 +40,10 @@ namespace cjt
 	//运算符重载
 	public:
 		DataType& operator[](int index)const {
-			if (index < 0 || index > length-1)
+			if (index < 0 || index > length)
 				throw std::out_of_range("访问超出范围!");
 
-			return data[index+1];
+			return data[index];
 		}
 
 	public:
@@ -52,6 +52,7 @@ namespace cjt
 		void ClearSeqList();                   //清除顺序表
 		bool empty() const { return length == 0; };  //判断表是否为空
 		int size() const { return length; };         //返回当前表长
+		int capacity_() const { return capacity; }; //返回容量
 		void insert(int, DataType);            //插入元素
 		void erase(int);                       //删除元素
 		int find(DataType);                    //查找元素，成功返回位置，失败返回0
@@ -73,7 +74,7 @@ namespace cjt
 
 	private:
 		int length;                     //当前表长度
-		int listsize;                   //表内存空间
+		int capacity;                   //表内存空间
 	};
 
 #endif // SEQLIST
@@ -94,11 +95,11 @@ namespace cjt
 		InitSeqList();
 
 		//分配足够的空间存放数组
-		if (n > listsize)
+		if (n > capacity)
 		{
-			int resize = ((n - listsize) / LIST_GROW_SIZE + 1) * LIST_GROW_SIZE;
-			data = (DataType*)realloc(data, (listsize + resize) * sizeof(DataType));
-			listsize += resize;
+			int resize = ((n - capacity) / LIST_GROW_SIZE + 1) * LIST_GROW_SIZE;
+			data = (DataType*)realloc(data, (capacity + resize) * sizeof(DataType));
+			capacity += resize;
 		}
 
 		//for (int i = 1; i <= n; ++i)
@@ -113,11 +114,11 @@ namespace cjt
 		InitSeqList();
 
 		//分配足够的空间存放数组
-		if (n > listsize)
+		if (n > capacity)
 		{
-			int resize = ((n - listsize) / LIST_GROW_SIZE + 1) * LIST_GROW_SIZE;
-			data = (DataType*)realloc(data, (listsize + resize) * sizeof(DataType));
-			listsize += resize;
+			int resize = ((n - capacity) / LIST_GROW_SIZE + 1) * LIST_GROW_SIZE;
+			data = (DataType*)realloc(data, (capacity + resize) * sizeof(DataType));
+			capacity += resize;
 		}
 
 		for (int i = 1; i <= n; ++i)
@@ -136,14 +137,14 @@ namespace cjt
 	template <typename T>
 	SeqList<T>::SeqList(const SeqList<T> &list)
 	{
-		//data = (DataType*)malloc(list.listsize * sizeof(DataType)); //分配和list相同大小的内存空间
-		data = new DataType[list.listsize];
+		//data = (DataType*)malloc(list.capacity * sizeof(DataType)); //分配和list相同大小的内存空间
+		data = new DataType[list.capacity];
 
 		for (int i = 1; i <= list.length; ++i)
 			data[i] = list.data[i]; //从list拷贝数据
 
 		length = list.length;       //初始化length
-		listsize = list.listsize;   //初始化listsize
+		capacity = list.capacity;   //初始化listsize
 	}
 
 	//初始化顺序表
@@ -153,7 +154,7 @@ namespace cjt
 		//data = (DataType*)malloc((LIST_INIT_SIZE + 1) * sizeof(DataType)); //0下标，不存放数据
 		data = new DataType[LIST_INIT_SIZE + 1];
 		length = 0;
-		listsize = LIST_INIT_SIZE; //初始存储大小
+		capacity = LIST_INIT_SIZE; //初始存储大小
 	}
 
 	//创建顺序表
@@ -243,10 +244,10 @@ namespace cjt
 	template <typename T>
 	typename SeqList<T>::DataType SeqList<T>::find_n(int i)
 	{
-		if (i < 0 || i > length)
+		if (i < 0 || i > length - 1)
 			throw std::out_of_range("访问超出范围!");
 
-		return data[i];
+		return data[i+1];
 	}
 
 	//返回首迭代器
@@ -295,10 +296,10 @@ namespace cjt
 	template <typename T>
 	void SeqList<T>::check_listsize()
 	{
-		if (length >= listsize)
+		if (length >= capacity)
 		{
-			data = (DataType*)realloc(data, (listsize + LIST_GROW_SIZE) * sizeof(DataType));
-			listsize += LIST_GROW_SIZE;
+			data = (DataType*)realloc(data, (capacity + LIST_GROW_SIZE) * sizeof(DataType));
+			capacity += LIST_GROW_SIZE;
 		}
 	}
 }

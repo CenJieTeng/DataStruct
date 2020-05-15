@@ -35,10 +35,12 @@ namespace cjt
 		if (begin == end) //输入范围为空
 			return 0;
 
+		_Tkey val = *begin;
 		*begin = key; //0下标不存放数据，把key赋值给它，作为查找结束依据。--“哨兵”免去检查是否超过范围
 		_Titer iterCur = --end; //当前所比较元素的游标，默认指向最后一个元素
 
 		for (; !EQ(*iterCur,key); --iterCur); //向前迭代寻找与key相等的元素，如果找不到iterCur == begin
+		*begin = val;
 
 		return iterCur - begin;
 	}

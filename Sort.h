@@ -31,7 +31,7 @@ namespace cjt
 	template<typename _Type>
 	void InsertSort(SeqList<_Type> &list) {
 
-		for (int i = 1; i < list.size(); ++i) {
+		for (int i = 2; i <= list.size(); ++i) {
 			if (LT(list[i], list[i - 1])) {
 				list[0] = list[i]; //list[i]保存哨兵位置
 
