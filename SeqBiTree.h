@@ -12,6 +12,7 @@
 #ifndef SEQBITREE_H
 #define SEQBITREE_H
 #include <math.h>
+#include <limits>
 
 namespace cjt
 {
@@ -102,7 +103,7 @@ namespace cjt
 			if (n <= list.size())
 				root[i].data = list[n++];
 			else
-				root[i].data = INT_MAX;
+				root[i].data = std::numeric_limits<int>().max();
 		}
 	}
 

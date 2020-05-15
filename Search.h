@@ -56,7 +56,7 @@ namespace cjt
 		while (high >= low) { //如果范围内还存在元素
 			int mid = (low + high) / 2; //求中间元素下标，
 
-			if (EQ(*(beg3in + mid),key)) return mid; //找到元素，返回下标
+			if (EQ(*(begin + mid),key)) return mid; //找到元素，返回下标
 			else if (!LQ(key,*(begin + mid))) low = mid + 1; //如果key大于mid下标的元素，在[mid + 1,high] 范围内继续查找
 			else
 				high = mid - 1; //如果key小于mid下标的元素，在[low,mid - 1] 范围内继续查找
@@ -86,7 +86,7 @@ namespace cjt
 			}
 
 		//构造根节点
-		(*T) = (BiTree<_Type>::BiTreeNode*)malloc(sizeof(BiTree<_Type>::BiTreeNode));
+		(*T) = (typename BiTree<_Type>::BiTreeNode*)malloc(sizeof(BiTree<_Type>::BiTreeNode));
 		(*T)->data =list.find_n(i);
 
 		if (i == low) (*T)->leftChild = nullptr;    //左子树为空
@@ -137,7 +137,7 @@ namespace cjt
 	//参数说明：有序树根节点，要查找元素的key
 	template <typename _Type,
 		typename _Tkey>
-	bool Search_OrderedTree(typename const BiTree<_Type>::BiTreeNode *T, _Tkey key)
+	bool Search_OrderedTree(const typename BiTree<_Type>::BiTreeNode *T, _Tkey key)
 	{
 		while (T){
 			if (T->data == key)
@@ -221,7 +221,7 @@ namespace cjt
 		typename _Tkey>
 	bool Insert_BST(BiTree<_Type> &T, _Tkey key){
 
-		BiTree<_Type>::BiTreeNode *p = nullptr;
+		typename BiTree<_Type>::BiTreeNode *p = nullptr;
 		if (!Search_BST(T, key, p)) { //树中不存在关键字为key的结点
 
 			//创建结点
@@ -251,7 +251,7 @@ namespace cjt
 				T.ClearBiTree();
 
 			//插入数据
-			for each (const _Type value in list)
+			for (const _Type value : list)
 				Insert_BST(T, value);
 		}
 	}
@@ -285,7 +285,7 @@ namespace cjt
 	template <typename _Type>
 	bool Ernse_BST(typename BiTree<_Type>::BiTreeNode **T) {
 
-		BiTree<_Type>::BiTreeNode *p, *q;
+		typename BiTree<_Type>::BiTreeNode *p, *q;
 		p = q = nullptr;
 
 		if ((*T)->leftChild != nullptr && (*T)->rightChild != nullptr){
@@ -316,6 +316,84 @@ namespace cjt
 		}
 
 		return true;
+	}
+
+	//左单旋
+	template <typename _Type>
+	void RotateL(typename BiTree<_Type>::BiTreeNode *&T)
+	{
+		auto subL = T;
+		T = T->rightChild;
+
+		subL->rightChild = T->leftChild;
+		T->leftChild = subL;
+		subL->bf = T->bf = 0;
+	}
+
+	//右旋转
+	template <typename _Type>
+	void RotateR(typename BiTree<_Type>::BiTreeNode *&T)
+	{
+		auto subR = T;
+		T = T->leftChild;
+
+		subR->leftChild = T->rightChild;
+		T->rightChild = subR;
+		subR->bf = T->bf = 0;
+	}
+
+	//先左后右旋转
+	template <typename _Type>
+	void RotateLR(typename BiTree<_Type>::BiTreeNode *&T)
+	{
+		auto subR = T;
+		auto subL = T->leftChild;
+		T = subL->rightChild;
+
+		//左旋
+		subL->rightChild = T->leftChild;
+		T->leftChild = subL;
+		if (T->bf <= 0)
+			subL->bf = 0;
+		else
+			subL->bf = 1;
+
+		//右旋
+		subR->leftChild = T->rightChild;
+		T->rightChild = subR;
+		if (T->bf == -1)
+			subR->bf = 1;
+		else
+			subR->bf = 0;
+
+		T->bf = 0;
+	}
+
+	//先右后左旋转
+	template <typename _Type>
+	void RotateRL(typename BiTree<_Type>::BiTreeNode *&T)
+	{
+		auto subL = T;
+		auto subR = T->rightChild;
+		T = subR->leftChild;
+
+		//右旋
+		subR->leftChild = T->rightChild;
+		T->rightChild = subR;
+		if (T->bf >= 0)
+			subR->bf = 0;
+		else
+			subR->bf = 1;
+
+		//左旋转
+		subL->rightChild = T->leftChild;
+		T->leftChild = subL;
+		if (T->bf == -1)
+			subL->bf = 0;
+		else
+			subL->bf = -1;
+
+		T->bf = 0;
 	}
 
 	//插入平衡二叉树节点<接口>
@@ -406,85 +484,6 @@ namespace cjt
 		return true;
 	}
 
-	//左单旋
-	template <typename _Type>
-	void RotateL(typename BiTree<_Type>::BiTreeNode *&T)
-	{
-		auto subL = T;
-		T = T->rightChild;
-
-		subL->rightChild = T->leftChild;
-		T->leftChild = subL;
-		subL->bf = T->bf = 0;
-	}
-
-	//右旋转
-	template <typename _Type>
-	void RotateR(typename BiTree<_Type>::BiTreeNode *&T)
-	{
-		auto subR = T;
-		T = T->leftChild;
-
-		subR->leftChild = T->rightChild;
-		T->rightChild = subR;
-		subR->bf = T->bf = 0;
-	}
-
-	//先左后右旋转
-	template <typename _Type>
-	void RotateLR(typename BiTree<_Type>::BiTreeNode *&T)
-	{
-		auto subR = T;
-		auto subL = T->leftChild;
-		T = subL->rightChild;
-
-		//左旋
-		subL->rightChild = T->leftChild;
-		T->leftChild = subL;
-		if (T->bf <= 0)
-			subL->bf = 0;
-		else
-			subL->bf = 1;
-
-		//右旋
-		subR->leftChild = T->rightChild;
-		T->rightChild = subR;
-		if (T->bf == -1)
-			subR->bf = 1;
-		else
-			subR->bf = 0;
-
-		T->bf = 0;
-	}
-
-	//先右后左旋转
-	template <typename _Type>
-	void RotateRL(typename BiTree<_Type>::BiTreeNode *&T)
-	{
-		auto subL = T;
-		auto subR = T->rightChild;
-		T = subR->leftChild;
-
-		//右旋
-		subR->leftChild = T->rightChild;
-		T->rightChild = subR;
-		if (T->bf >= 0)
-			subR->bf = 0;
-		else
-			subR->bf = 1;
-
-		//左旋转
-		subL->rightChild = T->leftChild;
-		T->leftChild = subL;
-		if (T->bf == -1)
-			subL->bf = 0;
-		else
-			subL->bf = -1;
-
-		T->bf = 0;
-	}
-
-
 	//删除平衡二叉树结点<接口1>
 	template <typename _Type,
 		typename _Tkey>
@@ -502,7 +501,7 @@ namespace cjt
 			stack<typename BiTree<_Type>::BiTreeNode**> Stack;
 			auto **pCur = &T;
 			decltype(pCur) pParent = nullptr;
-			BiTree<_Type>::BiTreeNode *p = nullptr, *q = nullptr;
+			typename BiTree<_Type>::BiTreeNode *p = nullptr, *q = nullptr;
 
 			while (*pCur){
 				if (EQ(key, (*pCur)->data)){

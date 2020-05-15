@@ -11,6 +11,7 @@
 #ifndef SORT_H
 #define SORT_H
 #include <iostream>
+#include <limits>
 #include "SeqList.h"
 #include "SLinkList.h"
 #include "BiTree.h"
@@ -30,14 +31,14 @@ namespace cjt
 	template<typename _Type>
 	void InsertSort(SeqList<_Type> &list) {
 
-		for (int i = 2; i <= list.size(); ++i) {
+		for (int i = 1; i < list.size(); ++i) {
 			if (LT(list[i], list[i - 1])) {
 				list[0] = list[i]; //list[i]保存哨兵位置
 
 				//元素向后移动，让出空间
 				list[i] = list[i - 1];
 				int j;
-				for (j = i - 2; LT(list[0], list[j]); --j)
+				for (j = i - 1; LT(list[0], list[j]); --j)
 					list[j+1] = list[j];
 				list[j + 1] = list[0];
 			}
@@ -273,48 +274,6 @@ namespace cjt
 		}
 	}
 
-
-	//--树形选择排序
-	//时间复杂度：O(nlogn)
-	template <typename _Type>
-	void TreeSelectSort(SeqList<_Type> &list)
-	{
-		SeqBiTree<_Type> T;
-		T.CreateDataInLeaf(list);  //生成一颗完全二叉树，list的元素都存放在叶子节点
-
-		FirstTreeSelectSort<_Type>(T); //首次树形选择排序
-
-		int index = T.GetNode(0)->data;
-		list[1] = T.GetNode(index)->data;  //把第一次排序结果保存下来
-		T.GetNode(index)->data = INT_MAX;  //把该元素所存放的数据置为INT_MAX
-
-		//剩下的元素根据第一次排序后树的形态排序，只需要拿上次结果所在路径的元素比较即可
-		for (int i = 2; i <= list.size(); ++i)
-		{
-			TreeSelectSort(T);  //树形排序
-
-			index = T.GetNode(0)->data;
-			list[i] = T.GetNode(index)->data;  //把第一次排序结果保存下来
-			T.GetNode(index)->data = INT_MAX;  //把该元素所存放的数据置为INT_MAX
-		}
-	}
-
-	//--返回所在下标的左、右孩子的值，如果左、右孩子不是叶结点则返回左、右孩子所存放的下标的值
-	template <typename _Type>
-	_Type GetValue(const SeqBiTree<_Type> &T, int p, int child)
-	{
-		
-		if ((child * 2 + 1) >= T.GetNodeNumber()){
-			//如果child下标的结点是叶子结点
-			return T.GetNode(child)->data;
-		}
-		else{
-			//child下标的结点不是叶子结点
-			int index = T.GetNode(child)->data;
-			return T.GetNode(index)->data;
-		}
-	}
-
 	//--首次树形选择排序
 	template <typename _Type>
 	void FirstTreeSelectSort(SeqBiTree<_Type> &T)
@@ -407,6 +366,46 @@ namespace cjt
 		}
 	}
 
+	//--树形选择排序
+	//时间复杂度：O(nlogn)
+	template <typename _Type>
+	void TreeSelectSort(SeqList<_Type> &list)
+	{
+		SeqBiTree<_Type> T;
+		T.CreateDataInLeaf(list);  //生成一颗完全二叉树，list的元素都存放在叶子节点
+
+		FirstTreeSelectSort<_Type>(T); //首次树形选择排序
+
+		int index = T.GetNode(0)->data;
+		list[1] = T.GetNode(index)->data;  //把第一次排序结果保存下来
+		T.GetNode(index)->data = std::numeric_limits<int>().max();;  //把该元素所存放的数据置为INT_MAX
+
+		//剩下的元素根据第一次排序后树的形态排序，只需要拿上次结果所在路径的元素比较即可
+		for (int i = 2; i <= list.size(); ++i)
+		{
+			TreeSelectSort(T);  //树形排序
+
+			index = T.GetNode(0)->data;
+			list[i] = T.GetNode(index)->data;  //把第一次排序结果保存下来
+			T.GetNode(index)->data = std::numeric_limits<int>().max();;  //把该元素所存放的数据置为INT_MAX
+		}
+	}
+
+	//--返回所在下标的左、右孩子的值，如果左、右孩子不是叶结点则返回左、右孩子所存放的下标的值
+	template <typename _Type>
+	_Type GetValue(const SeqBiTree<_Type> &T, int p, int child)
+	{
+		
+		if ((child * 2 + 1) >= T.GetNodeNumber()){
+			//如果child下标的结点是叶子结点
+			return T.GetNode(child)->data;
+		}
+		else{
+			//child下标的结点不是叶子结点
+			int index = T.GetNode(child)->data;
+			return T.GetNode(index)->data;
+		}
+	}
 
 	//--堆排序
 	//时间复杂度：O(nlogn)

@@ -16,6 +16,8 @@
 #include <stack>
 #include <queue>
 #include <string.h>
+#include <limits>
+#include "SeqList.h"
 //#define THREADING //需要线索化二叉树时定义
 #define AVL_TREE  //需要构造平衡二叉树时定义
 
@@ -27,42 +29,42 @@ namespace cjt
 		//---友元区---
 		template <typename _Type,
 			typename _Tw >
-		friend void SecondOptimal(typename BiTree<_Type>::BiTreeNode **T, SeqList<_Type> list, _Tw *sw, int low, int high);
+		friend void SecondOptimal(typename BiTree<_Type>::BiTreeNode **node, SeqList<_Type> list, _Tw *sw, int low, int high);
 
 		template <typename _Type>
-		friend void CreateSOSTree(BiTree<_Type> &T, SeqList<_Type> list);
+		friend void CreateSOSTree(BiTree<_Type> &tree, SeqList<_Type> list);
 
 		template <typename _Type,
 			typename _Tkey>
-		friend bool Search_OrderedTree(const BiTree<_Type> &T, _Tkey key);
+		friend bool Search_OrderedTree(const BiTree<_Type> &tree, _Tkey key);
 
 		template <typename _Type,
 			typename _Tkey>
-		friend bool Search_OrderedTree(const typename BiTree<_Type>::BiTreeNode *T, _Tkey key);
+		friend bool Search_OrderedTree(const typename BiTree<_Type>::BiTreeNode *node, _Tkey key);
 
 		template <typename _Type,
 			typename _Tkey>
-		friend bool Search_BST(BiTree<_Type> &T, _Tkey key, typename BiTree<_Type>::BiTreeNode *&p);
+		friend bool Search_BST(BiTree<_Type>&, _Tkey key, typename BiTree<_Type>::BiTreeNode *&p);
 
 		template <typename _Type,
 			typename _Tkey>
-		friend bool Search_BST(typename BiTree<_Type>::BiTreeNode *T, _Tkey key, typename BiTree<_Type>::BiTreeNode *f, typename BiTree<_Type>::BiTreeNode *&p);
+		friend bool Search_BST(typename BiTree<_Type>::BiTreeNode *node, _Tkey key, typename BiTree<_Type>::BiTreeNode *f, typename BiTree<_Type>::BiTreeNode *&p);
 
 		template <typename _Type,
 			typename _Tkey>
-		friend bool Insert_BST(BiTree<_Type> &T, _Tkey key);
+		friend bool Insert_BST(BiTree<_Type> &tree, _Tkey key);
 
 		template <typename _Type,
 			typename _Tkey>
-		friend bool Ernse_BST(BiTree<_Type> &T, _Tkey key);
+		friend bool Ernse_BST(BiTree<_Type> &tree, _Tkey key);
 
 		template <typename _Type,
 			typename _Tkey>
-		friend bool Insert_AVLTree(BiTree<_Type> &T, _Tkey key);
+		friend bool Insert_AVLTree(BiTree<_Type> &tree, _Tkey key);
 
 		template <typename _Type,
 			typename _Tkey>
-		friend bool Ernse_AVLTree(BiTree<_Type> &T, _Tkey key);
+		friend bool Ernse_AVLTree(BiTree<_Type> &tree, _Tkey key);
 
 		template <typename _Type>
 		friend void TreeSelectSort(SeqList<_Type> &list);
@@ -135,7 +137,7 @@ namespace cjt
 
 
 	private:
-		void CreateBiTreeWithDepth(typename BiTree<T>::BiTreeNode *&T, int depth); //创建深度为depth的完全二叉树<接口>
+		void CreateBiTreeWithDepth(typename BiTree<T>::BiTreeNode *&node, int depth); //创建深度为depth的完全二叉树<接口>
 		void CreateBiTree_Preorder(BiTreeNode* &t);                              //前序创建<实现>
 	#ifdef THREADING
 		void Threading_InOrder(BiTreeNode *p, BiTreeNode *&pre);                 //中序线索化<实现>
@@ -152,7 +154,7 @@ namespace cjt
 		void ClearBiTree(BiTreeNode* &t);                                        //清除树
 		BiTreeNode* FindNode(BiTreeNode *t, const DataType x) const;             //寻找值等于x的结点																   
 		BiTreeNode* Parent(BiTreeNode *t, const DataType x) const;               //获取值等于x的结点的 双亲<实现>
-		BiTreeNode* RightSibling(BiTreeNode *const &T, const DataType x) const;        //获取值等于x的结点的右兄弟<实现>
+		BiTreeNode* RightSibling(BiTreeNode *const &node, const DataType x) const;        //获取值等于x的结点的右兄弟<实现>
 
 	private:
 		BiTreeNode *root;        //根结点
@@ -207,7 +209,7 @@ namespace cjt
 			if (i <= list.size())
 				p->data = list[i];
 			else
-				p->data = INT_MAX;
+				p->data = std::numeric_limits<int>().max();
 
 			p = RightSibling(p->data);
 		}
@@ -222,15 +224,15 @@ namespace cjt
 
 	//创建深度为depth的完全二叉树<实现>
 	template <typename T>
-	void BiTree<T>::CreateBiTreeWithDepth(typename BiTree<T>::BiTreeNode *&T, int depth)
+	void BiTree<T>::CreateBiTreeWithDepth(typename BiTree<T>::BiTreeNode *&node, int depth)
 	{
 		if (depth != 0)
 		{
-			T = (BiTreeNode*)malloc(sizeof(BiTreeNode));
-			T->leftChild = T->rightChild = nullptr;
+			node = (BiTreeNode*)malloc(sizeof(BiTreeNode));
+			node->leftChild = node->rightChild = nullptr;
 
-			CreateBiTreeWithDepth(T->leftChild, depth - 1);
-			CreateBiTreeWithDepth(T->rightChild, depth - 1);
+			CreateBiTreeWithDepth(node->leftChild, depth - 1);
+			CreateBiTreeWithDepth(node->rightChild, depth - 1);
 		}
 	}
 
@@ -504,15 +506,15 @@ namespace cjt
 		//显然，如果左子树、右子树都有标记，说明就已经找到最小公共祖先了。
 		//如果在根节点为p的左右子树中找p、q的公共祖先，则必定是p本身。
 	template <typename T>
-	typename BiTree<T>::BiTreeNode* BiTree<T>::FindLCA(BiTreeNode *T, const BiTreeNode *tn1, const BiTreeNode *tn2)const
+	typename BiTree<T>::BiTreeNode* BiTree<T>::FindLCA(BiTreeNode *node, const BiTreeNode *tn1, const BiTreeNode *tn2)const
 	{
-		if (!T || T == tn1 || T == tn2)
-			return T;
+		if (!node || node == tn1 || node == tn2)
+			return node;
 
-		BiTreeNode *left = FindLCA(T->leftChild, tn1, tn2);
-		BiTreeNode *right = FindLCA(T->rightChild, tn1, tn2);
+		BiTreeNode *left = FindLCA(node->leftChild, tn1, tn2);
+		BiTreeNode *right = FindLCA(node->rightChild, tn1, tn2);
 		if (left && right)
-			return T;
+			return node;
 
 		return left ? left : right;
 	}
@@ -650,21 +652,21 @@ namespace cjt
 	//获取值等于x的结点的右兄弟<实现>
 	template <typename T>
 	typename BiTree<T>::BiTreeNode* 
-		BiTree<T>::RightSibling(typename BiTree<T>::BiTreeNode *const &T, const DataType x) const
+		BiTree<T>::RightSibling(typename BiTree<T>::BiTreeNode *const &node, const DataType x) const
 	{
-		if (T != nullptr){
+		if (node != nullptr){
 
-			if (T->leftChild && T->leftChild->data == x)
-				return T->rightChild;
+			if (node->leftChild && node->leftChild->data == x)
+				return node->rightChild;
 
-			if (T->rightChild && T->rightChild->data == x){
+			if (node->rightChild && node->rightChild->data == x){
 				BiTreeNode tmp;
-				tmp.data = T->data;
-				T->data = 9999;
+				tmp.data = node->data;
+				node->data = 9999;
 				BiTreeNode *p = Parent(9999);
-				T->data = tmp.data;
+				node->data = tmp.data;
 
-				BiTreeNode *p2 = T;
+				BiTreeNode *p2 = node;
 				int iCount = 0;
 				while (p->leftChild != p2)
 				{
@@ -692,11 +694,11 @@ namespace cjt
 			}
 
 			BiTreeNode *ret = nullptr;
-			ret = RightSibling(T->leftChild, x);
+			ret = RightSibling(node->leftChild, x);
 			if (ret)
 				return ret;
 
-			ret = RightSibling(T->rightChild, x);
+			ret = RightSibling(node->rightChild, x);
 			if (ret)
 				return ret;
 		}

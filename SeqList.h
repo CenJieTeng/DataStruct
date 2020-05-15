@@ -40,10 +40,10 @@ namespace cjt
 	//运算符重载
 	public:
 		DataType& operator[](int index)const {
-			if (index < 0 || index > length)
+			if (index < 0 || index > length-1)
 				throw std::out_of_range("访问超出范围!");
 
-			return data[index];
+			return data[index+1];
 		}
 
 	public:
