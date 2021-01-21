@@ -38,7 +38,7 @@ public:
 
 private:
 	void CreateTree(TreeNode* &t);                                  //创建树
-	void Tree::ClearTree(TreeNode *t);                              //清除树
+	void ClearTree(TreeNode *t);                              		//清除树
 	TreeNode* FindNode(TreeNode *t, const DataType x) const;        //获取值等于x的结点
 	void PreOrderTraverse(TreeNode *&t, void(*Visit)(DataType));    //前序遍历，递归法<实现>
 

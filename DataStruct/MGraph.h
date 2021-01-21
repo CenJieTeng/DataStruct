@@ -19,10 +19,11 @@ QQ: 2271369683
 #define MGRAPH_H
 #include <iostream>
 #include <algorithm>
-#include <limits>
+#include <climits>
 #include <queue>
 #include <stack>
 #include <vector>
+#include <cstring>
 #include "Tree.h"
 #define MAXSIZE 20
 #define INFINITE INT_MAX
